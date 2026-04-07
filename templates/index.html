@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TCET ERP — College Management System</title>
+  <link rel="stylesheet" href="../static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- ═══════════════════ LOGIN PAGE ═══════════════════ -->
+  <div id="loginPage" class="page active">
+    <div class="login-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+    </div>
+    <div class="login-container">
+      <div class="login-left">
+        <div class="brand">
+          <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h1>TCET ERP</h1>
+          <p>Thakur College of Engineering<br/>& Technology</p>
+        </div>
+        <div class="login-tagline">
+          <h2>Empowering Education<br/>Through Technology</h2>
+          <p>Unified platform for students, teachers and administrators to collaborate efficiently.</p>
+        </div>
+        <div class="login-stats">
+          <div class="stat"><span>2,400+</span><small>Students</small></div>
+          <div class="stat"><span>180+</span><small>Faculty</small></div>
+          <div class="stat"><span>12</span><small>Departments</small></div>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-card glass">
+          <h3>Welcome Back</h3>
+          <p class="login-sub">Sign in to your dashboard</p>
+
+          <div class="role-selector">
+            <button class="role-btn active" data-role="student" onclick="selectRole(this)">
+              <i class="fas fa-user-graduate"></i> Student
+            </button>
+            <button class="role-btn" data-role="teacher" onclick="selectRole(this)">
+              <i class="fas fa-chalkboard-teacher"></i> Teacher
+            </button>
+            <button class="role-btn" data-role="admin" onclick="selectRole(this)">
+              <i class="fas fa-shield-alt"></i> Admin
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="emailInput" placeholder="your@tcet.ac.in" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="passInput" placeholder="Enter password" />
+              <button class="eye-btn" onclick="togglePass()"><i class="fas fa-eye" id="eyeIcon"></i></button>
+            </div>
+          </div>
+
+          <div id="loginError" class="login-error hidden">
+            <i class="fas fa-exclamation-circle"></i> Invalid credentials. Please try again.
+          </div>
+
+          <button class="btn-primary login-btn" onclick="handleLogin()">
+            <span>Sign In</span> <i class="fas fa-arrow-right"></i>
+          </button>
+
+          <p class="forgot"><a href="#">Forgot password?</a> · <a href="#">Need help?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ DASHBOARD SHELL ═══════════════════ -->
+  <div id="dashboardPage" class="page">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sb-brand">
+          <div class="sb-icon"><i class="fas fa-graduation-cap"></i></div>
+          <span>TCET ERP</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      </div>
+
+      <!-- Student Nav -->
+      <nav class="sb-nav" id="studentNav">
+        <p class="nav-label">Student</p>
+        <a href="#" class="nav-item active" onclick="showSection('studentOverview', this)">
+          <i class="fas fa-home"></i><span>Overview</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('studentMarks', this)">
+          <i class="fas fa-chart-bar"></i><span>Marks</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('studentAttendance', this)">
+          <i class="fas fa-calendar-check"></i><span>Attendance</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('studentTimetable', this)">
+          <i class="fas fa-clock"></i><span>Timetable</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('studentNotices', this)">
+          <i class="fas fa-bell"></i><span>Notices</span>
+        </a>
+      </nav>
+
+      <!-- Teacher Nav -->
+      <nav class="sb-nav hidden" id="teacherNav">
+        <p class="nav-label">Teacher</p>
+        <a href="#" class="nav-item active" onclick="showSection('teacherOverview', this)">
+          <i class="fas fa-home"></i><span>Overview</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('teacherAttendance', this)">
+          <i class="fas fa-calendar-check"></i><span>Attendance</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('teacherMarks', this)">
+          <i class="fas fa-pen"></i><span>Enter Marks</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('teacherNotice', this)">
+          <i class="fas fa-bullhorn"></i><span>Post Notice</span>
+        </a>
+      </nav>
+
+      <!-- Admin Nav -->
+      <nav class="sb-nav hidden" id="adminNav">
+        <p class="nav-label">Admin</p>
+        <a href="#" class="nav-item active" onclick="showSection('adminOverview', this)">
+          <i class="fas fa-home"></i><span>Overview</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('adminStudents', this)">
+          <i class="fas fa-user-graduate"></i><span>Students</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('adminTeachers', this)">
+          <i class="fas fa-chalkboard-teacher"></i><span>Teachers</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('adminStats', this)">
+          <i class="fas fa-chart-pie"></i><span>Statistics</span>
+        </a>
+      </nav>
+
+      <div class="sb-footer">
+        <div class="user-info" id="sidebarUser"></div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="pageSubtitle" class="subtitle"></p>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-date" id="topbarDate"></div>
+          <div class="topbar-avatar" id="topbarAvatar"></div>
+        </div>
+      </header>
+
+      <!-- ──── STUDENT SECTIONS ──── -->
+
+      <section id="studentOverview" class="section active">
+        <div class="cards-grid">
+          <div class="stat-card glass accent-green">
+            <div class="sc-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="sc-info">
+              <h4>Attendance</h4>
+              <span class="sc-num">84%</span>
+              <p>This Semester</p>
+            </div>
+            <div class="sc-ring"><svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill green" stroke-dasharray="84, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg></div>
+          </div>
+          <div class="stat-card glass accent-amber">
+            <div class="sc-icon"><i class="fas fa-star"></i></div>
+            <div class="sc-info">
+              <h4>CGPA</h4>
+              <span class="sc-num">8.6</span>
+              <p>Current Semester</p>
+            </div>
+            <div class="sc-ring"><svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill amber" stroke-dasharray="86, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg></div>
+          </div>
+          <div class="stat-card glass accent-blue">
+            <div class="sc-icon"><i class="fas fa-book"></i></div>
+            <div class="sc-info">
+              <h4>Subjects</h4>
+              <span class="sc-num">6</span>
+              <p>Enrolled</p>
+            </div>
+          </div>
+          <div class="stat-card glass accent-rose">
+            <div class="sc-icon"><i class="fas fa-tasks"></i></div>
+            <div class="sc-info">
+              <h4>Assignments</h4>
+              <span class="sc-num">3</span>
+              <p>Due this week</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-chart-bar"></i> Subject Scores</h3>
+            <div class="bar-chart">
+              <div class="bar-item"><span>Data Structures</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><b>88</b></div>
+              <div class="bar-item"><span>DBMS</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><b>75</b></div>
+              <div class="bar-item"><span>OS</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><b>92</b></div>
+              <div class="bar-item"><span>CN</span><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div><b>68</b></div>
+              <div class="bar-item"><span>TOC</span><div class="bar-track"><div class="bar-fill" style="width:79%"></div></div><b>79</b></div>
+              <div class="bar-item"><span>CD</span><div class="bar-track"><div class="bar-fill" style="width:83%"></div></div><b>83</b></div>
+            </div>
+          </div>
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-bell"></i> Recent Notices</h3>
+            <div class="notice-list">
+              <div class="notice-item"><span class="notice-dot red"></span><div><b>Internal Exam Schedule</b><p>Exams from 18th–22nd April. Hall tickets available on portal.</p><small>2 days ago</small></div></div>
+              <div class="notice-item"><span class="notice-dot amber"></span><div><b>Project Submission</b><p>Final year projects must be submitted before 30th April.</p><small>4 days ago</small></div></div>
+              <div class="notice-item"><span class="notice-dot green"></span><div><b>Library Maintenance</b><p>Library closed on Saturday for inventory management.</p><small>1 week ago</small></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="studentMarks" class="section">
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-chart-bar"></i> Marks Report — Semester VI</h3>
+          <div class="table-wrap">
+            <table class="erp-table">
+              <thead>
+                <tr><th>#</th><th>Subject</th><th>Code</th><th>UT1</th><th>UT2</th><th>Mid Sem</th><th>End Sem</th><th>Total</th><th>Grade</th></tr>
+              </thead>
+              <tbody id="marksTableBody">
+              </tbody>
+            </table>
+          </div>
+          <div class="marks-summary">
+            <div class="ms-item"><span>Total Marks</span><b>485 / 600</b></div>
+            <div class="ms-item"><span>Percentage</span><b>80.8%</b></div>
+            <div class="ms-item"><span>CGPA</span><b>8.6</b></div>
+            <div class="ms-item"><span>Result</span><b style="color:var(--green)">PASS</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="studentAttendance" class="section">
+        <div class="two-col">
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-calendar-check"></i> Attendance Summary</h3>
+            <div class="attendance-list" id="studentAttendanceList">
+            </div>
+          </div>
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-info-circle"></i> Attendance Status</h3>
+            <div class="att-status-cards">
+              <div class="ass-card green"><span>Present</span><b>72</b><small>days</small></div>
+              <div class="ass-card red"><span>Absent</span><b>14</b><small>days</small></div>
+              <div class="ass-card amber"><span>Total</span><b>86</b><small>days</small></div>
+              <div class="ass-card blue"><span>Overall</span><b>84%</b><small></small></div>
+            </div>
+            <div class="att-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>CN attendance is below 75%. <b>Attendance shortage warning issued.</b></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="studentTimetable" class="section">
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-clock"></i> Weekly Timetable — SE Computer (Div A)</h3>
+          <div class="table-wrap">
+            <table class="erp-table timetable">
+              <thead>
+                <tr><th>Time</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="time-col">9:00–10:00</td>
+                  <td><div class="tt-cell blue">DSA<small>Prof. Sharma</small></div></td>
+                  <td><div class="tt-cell green">DBMS<small>Prof. Gupta</small></div></td>
+                  <td><div class="tt-cell amber">OS<small>Prof. Mehta</small></div></td>
+                  <td><div class="tt-cell rose">CN<small>Prof. Nair</small></div></td>
+                  <td><div class="tt-cell blue">DSA<small>Prof. Sharma</small></div></td>
+                  <td><div class="tt-cell empty">—</div></td>
+                </tr>
+                <tr>
+                  <td class="time-col">10:00–11:00</td>
+                  <td><div class="tt-cell amber">OS<small>Prof. Mehta</small></div></td>
+                  <td><div class="tt-cell rose">CN<small>Prof. Nair</small></div></td>
+                  <td><div class="tt-cell blue">DSA<small>Prof. Sharma</small></div></td>
+                  <td><div class="tt-cell green">DBMS<small>Prof. Gupta</small></div></td>
+                  <td><div class="tt-cell teal">TOC<small>Prof. Pillai</small></div></td>
+                  <td><div class="tt-cell blue">Lab<small>DSA Lab</small></div></td>
+                </tr>
+                <tr>
+                  <td class="time-col">11:00–12:00</td>
+                  <td><div class="tt-cell teal">TOC<small>Prof. Pillai</small></div></td>
+                  <td><div class="tt-cell amber">OS<small>Prof. Mehta</small></div></td>
+                  <td><div class="tt-cell green">DBMS<small>Prof. Gupta</small></div></td>
+                  <td><div class="tt-cell teal">TOC<small>Prof. Pillai</small></div></td>
+                  <td><div class="tt-cell green">CD Lab<small>Prof. Joshi</small></div></td>
+                  <td><div class="tt-cell blue">Lab<small>DSA Lab</small></div></td>
+                </tr>
+                <tr>
+                  <td class="time-col">12:00–1:00</td>
+                  <td colspan="6"><div class="tt-break">🍽 Lunch Break</div></td>
+                </tr>
+                <tr>
+                  <td class="time-col">1:00–2:00</td>
+                  <td><div class="tt-cell rose">CN<small>Prof. Nair</small></div></td>
+                  <td><div class="tt-cell teal">TOC<small>Prof. Pillai</small></div></td>
+                  <td><div class="tt-cell amber">OS Lab<small>Prof. Mehta</small></div></td>
+                  <td><div class="tt-cell blue">DSA<small>Prof. Sharma</small></div></td>
+                  <td><div class="tt-cell rose">CN<small>Prof. Nair</small></div></td>
+                  <td><div class="tt-cell empty">—</div></td>
+                </tr>
+                <tr>
+                  <td class="time-col">2:00–3:00</td>
+                  <td><div class="tt-cell green">DBMS Lab<small>Prof. Gupta</small></div></td>
+                  <td><div class="tt-cell blue">DSA<small>Prof. Sharma</small></div></td>
+                  <td><div class="tt-cell amber">OS Lab<small>Prof. Mehta</small></div></td>
+                  <td><div class="tt-cell rose">CN<small>Prof. Nair</small></div></td>
+                  <td><div class="tt-cell empty">—</div></td>
+                  <td><div class="tt-cell empty">—</div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="studentNotices" class="section">
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-bell"></i> Notice Board</h3>
+          <div class="notice-grid" id="noticeGrid">
+          </div>
+        </div>
+      </section>
+
+      <!-- ──── TEACHER SECTIONS ──── -->
+
+      <section id="teacherOverview" class="section">
+        <div class="cards-grid">
+          <div class="stat-card glass accent-blue">
+            <div class="sc-icon"><i class="fas fa-users"></i></div>
+            <div class="sc-info"><h4>Total Students</h4><span class="sc-num">120</span><p>Assigned</p></div>
+          </div>
+          <div class="stat-card glass accent-green">
+            <div class="sc-icon"><i class="fas fa-book"></i></div>
+            <div class="sc-info"><h4>Subjects</h4><span class="sc-num">3</span><p>Teaching</p></div>
+          </div>
+          <div class="stat-card glass accent-amber">
+            <div class="sc-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="sc-info"><h4>Classes Today</h4><span class="sc-num">4</span><p>Scheduled</p></div>
+          </div>
+          <div class="stat-card glass accent-rose">
+            <div class="sc-icon"><i class="fas fa-clock"></i></div>
+            <div class="sc-info"><h4>Pending</h4><span class="sc-num">2</span><p>Marks to Enter</p></div>
+          </div>
+        </div>
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-calendar"></i> Today's Schedule</h3>
+          <div class="teacher-schedule">
+            <div class="ts-item active-class"><div class="ts-time">9:00 AM</div><div class="ts-info"><b>Data Structures</b><p>SE Computer A · Room 302</p></div><span class="badge green">Now</span></div>
+            <div class="ts-item"><div class="ts-time">11:00 AM</div><div class="ts-info"><b>DSA Lab</b><p>SE Computer B · Lab 104</p></div><span class="badge blue">Upcoming</span></div>
+            <div class="ts-item"><div class="ts-time">1:00 PM</div><div class="ts-info"><b>Compiler Design</b><p>TE Computer A · Room 401</p></div><span class="badge blue">Upcoming</span></div>
+            <div class="ts-item done"><div class="ts-time">—</div><div class="ts-info"><b>Department Meeting</b><p>Staff Room</p></div><span class="badge amber">Pending</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="teacherAttendance" class="section">
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-calendar-check"></i> Mark Attendance</h3>
+          <div class="att-controls">
+            <select class="erp-select" id="attClass">
+              <option>SE Computer A</option>
+              <option>SE Computer B</option>
+              <option>TE Computer A</option>
+            </select>
+            <select class="erp-select" id="attSubject">
+              <option>Data Structures</option>
+              <option>Compiler Design</option>
+              <option>DSA Lab</option>
+            </select>
+            <input type="date" class="erp-input" id="attDate" />
+            <button class="btn-primary small" onclick="markAllPresent()"><i class="fas fa-check-double"></i> All Present</button>
+          </div>
+          <div class="table-wrap">
+            <table class="erp-table">
+              <thead>
+                <tr><th>#</th><th>Student Name</th><th>Roll No.</th><th>Status</th><th>Toggle</th></tr>
+              </thead>
+              <tbody id="attendanceTableBody"></tbody>
+            </table>
+          </div>
+          <div class="att-actions">
+            <button class="btn-primary" onclick="saveAttendance()"><i class="fas fa-save"></i> Save Attendance</button>
+            <div id="attSaveMsg" class="save-msg hidden"><i class="fas fa-check-circle"></i> Attendance saved successfully!</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="teacherMarks" class="section">
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-pen"></i> Enter Student Marks</h3>
+          <div class="att-controls">
+            <select class="erp-select"><option>SE Computer A</option><option>SE Computer B</option></select>
+            <select class="erp-select" id="teachersMarkSubject"><option>Data Structures</option><option>Compiler Design</option></select>
+            <select class="erp-select"><option>Unit Test 1</option><option>Unit Test 2</option><option>Mid Sem</option><option>End Sem</option></select>
+          </div>
+          <div class="table-wrap">
+            <table class="erp-table">
+              <thead>
+                <tr><th>#</th><th>Student Name</th><th>Roll No.</th><th>Max Marks</th><th>Obtained Marks</th><th>Grade</th></tr>
+              </thead>
+              <tbody id="marksEntryBody"></tbody>
+            </table>
+          </div>
+          <div class="att-actions">
+            <button class="btn-primary" onclick="saveMarks()"><i class="fas fa-save"></i> Save Marks</button>
+            <div id="marksSaveMsg" class="save-msg hidden"><i class="fas fa-check-circle"></i> Marks saved successfully!</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="teacherNotice" class="section">
+        <div class="two-col">
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-bullhorn"></i> Post a Notice</h3>
+            <div class="form-group">
+              <label>Notice Title</label>
+              <div class="input-wrap"><i class="fas fa-heading"></i><input type="text" id="noticeTitle" placeholder="Enter notice title" /></div>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select class="erp-select full-w" id="noticeCategory">
+                <option value="urgent">🔴 Urgent</option>
+                <option value="important">🟡 Important</option>
+                <option value="general">🟢 General</option>
+                <option value="event">🔵 Event</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="noticeMsg" rows="5" placeholder="Write your notice here..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="postNotice()"><i class="fas fa-paper-plane"></i> Post Notice</button>
+            <div id="noticeSaveMsg" class="save-msg hidden"><i class="fas fa-check-circle"></i> Notice posted successfully!</div>
+          </div>
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-list"></i> Posted Notices</h3>
+            <div id="postedNotices" class="notice-list small">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──── ADMIN SECTIONS ──── -->
+
+      <section id="adminOverview" class="section">
+        <div class="cards-grid">
+          <div class="stat-card glass accent-blue">
+            <div class="sc-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="sc-info"><h4>Total Students</h4><span class="sc-num">2,418</span><p>Enrolled</p></div>
+          </div>
+          <div class="stat-card glass accent-green">
+            <div class="sc-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="sc-info"><h4>Faculty</h4><span class="sc-num">184</span><p>Active</p></div>
+          </div>
+          <div class="stat-card glass accent-amber">
+            <div class="sc-icon"><i class="fas fa-building"></i></div>
+            <div class="sc-info"><h4>Departments</h4><span class="sc-num">12</span><p>Active</p></div>
+          </div>
+          <div class="stat-card glass accent-rose">
+            <div class="sc-icon"><i class="fas fa-bell"></i></div>
+            <div class="sc-info"><h4>Active Notices</h4><span class="sc-num">8</span><p>This Week</p></div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-chart-pie"></i> Department Distribution</h3>
+            <div class="dept-list">
+              <div class="dept-row"><span>Computer Engineering</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><b>520</b></div>
+              <div class="dept-row"><span>Electronics</span><div class="bar-track"><div class="bar-fill amber-fill" style="width:65%"></div></div><b>398</b></div>
+              <div class="dept-row"><span>Mechanical</span><div class="bar-track"><div class="bar-fill green-fill" style="width:72%"></div></div><b>440</b></div>
+              <div class="dept-row"><span>Civil</span><div class="bar-track"><div class="bar-fill rose-fill" style="width:55%"></div></div><b>338</b></div>
+              <div class="dept-row"><span>IT</span><div class="bar-track"><div class="bar-fill blue-fill" style="width:60%"></div></div><b>368</b></div>
+            </div>
+          </div>
+          <div class="glass-panel">
+            <h3 class="panel-title"><i class="fas fa-chart-line"></i> System Activity</h3>
+            <div class="activity-list">
+              <div class="act-item"><div class="act-dot green"></div><div><b>Marks uploaded</b> — SE Comp A, DSA<small>2 hours ago</small></div></div>
+              <div class="act-item"><div class="act-dot blue"></div><div><b>Attendance recorded</b> — TE Comp B<small>3 hours ago</small></div></div>
+              <div class="act-item"><div class="act-dot amber"></div><div><b>Notice posted</b> — Exam schedule<small>5 hours ago</small></div></div>
+              <div class="act-item"><div class="act-dot rose"></div><div><b>New student enrolled</b> — FE Batch 2025<small>1 day ago</small></div></div>
+              <div class="act-item"><div class="act-dot green"></div><div><b>Timetable updated</b> — SE Batch<small>2 days ago</small></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminStudents" class="section">
+        <!-- ADD STUDENT FORM -->
+        <div class="glass-panel full" style="margin-bottom: 20px;">
+          <h3 class="panel-title"><i class="fas fa-user-plus"></i> Add New Student</h3>
+          <div class="grid-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 15px;">
+             <input type="text" id="newStudName" class="erp-input" placeholder="Full Name" />
+             <input type="text" id="newStudRoll" class="erp-input" placeholder="Roll No (e.g. 23CS01)" />
+             <input type="text" id="newStudDept" class="erp-input" placeholder="Department (e.g. Computer Eng.)" />
+             <input type="text" id="newStudYear" class="erp-input" placeholder="Year (e.g. FE, SE)" />
+             <input type="email" id="newStudEmail" class="erp-input" placeholder="Email Address" />
+          </div>
+          <button class="btn-primary" onclick="adminAddStudent()"><i class="fas fa-plus"></i> Add Student</button>
+          <div id="addStudMsg" class="save-msg hidden"><i class="fas fa-check-circle"></i> Student added successfully!</div>
+        </div>
+
+        <div class="glass-panel full">
+          <div class="panel-top">
+            <h3 class="panel-title"><i class="fas fa-user-graduate"></i> Student List</h3>
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="studentSearch" placeholder="Search students..." oninput="filterStudents()" />
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="erp-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Roll No.</th><th>Department</th><th>Year</th><th>Email</th><th>Attendance</th><th>Status</th></tr>
+              </thead>
+              <tbody id="adminStudentsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminTeachers" class="section">
+        <!-- ADD TEACHER FORM -->
+        <div class="glass-panel full" style="margin-bottom: 20px;">
+          <h3 class="panel-title"><i class="fas fa-user-plus"></i> Add New Teacher</h3>
+          <div class="grid-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 15px;">
+             <input type="text" id="newTeachName" class="erp-input" placeholder="Full Name" />
+             <input type="text" id="newTeachEmpid" class="erp-input" placeholder="Emp ID (e.g. TC010)" />
+             <input type="text" id="newTeachDept" class="erp-input" placeholder="Department" />
+             <input type="text" id="newTeachDesig" class="erp-input" placeholder="Designation (e.g. Professor)" />
+             <input type="text" id="newTeachSubj" class="erp-input" placeholder="Subjects (Comma separated)" />
+             <input type="email" id="newTeachEmail" class="erp-input" placeholder="Email Address" />
+          </div>
+          <button class="btn-primary" onclick="adminAddTeacher()"><i class="fas fa-plus"></i> Add Teacher</button>
+          <div id="addTeachMsg" class="save-msg hidden"><i class="fas fa-check-circle"></i> Teacher added successfully!</div>
+        </div>
+
+        <div class="glass-panel full">
+          <div class="panel-top">
+            <h3 class="panel-title"><i class="fas fa-chalkboard-teacher"></i> Faculty List</h3>
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search faculty..." />
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="erp-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Employee ID</th><th>Department</th><th>Designation</th><th>Subjects</th><th>Email</th></tr>
+              </thead>
+              <tbody id="adminTeachersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminStats" class="section">
+        <div class="cards-grid four">
+          <div class="stat-card glass accent-green"><div class="sc-icon"><i class="fas fa-trophy"></i></div><div class="sc-info"><h4>Avg. CGPA</h4><span class="sc-num">7.8</span><p>All Students</p></div></div>
+          <div class="stat-card glass accent-blue"><div class="sc-icon"><i class="fas fa-calendar-check"></i></div><div class="sc-info"><h4>Avg. Attendance</h4><span class="sc-num">81%</span><p>This Semester</p></div></div>
+          <div class="stat-card glass accent-amber"><div class="sc-icon"><i class="fas fa-book"></i></div><div class="sc-info"><h4>Courses Active</h4><span class="sc-num">48</span><p>This Semester</p></div></div>
+          <div class="stat-card glass accent-rose"><div class="sc-icon"><i class="fas fa-exclamation-circle"></i></div><div class="sc-info"><h4>Low Attendance</h4><span class="sc-num">37</span><p>Students below 75%</p></div></div>
+        </div>
+        <div class="glass-panel full">
+          <h3 class="panel-title"><i class="fas fa-chart-bar"></i> Department-wise Performance</h3>
+          <div class="big-bar-chart">
+            <div class="bbc-item"><div class="bbc-bar" style="height:85%"><span>8.5</span></div><p>Comp Eng</p></div>
+            <div class="bbc-item"><div class="bbc-bar amber" style="height:72%"><span>7.2</span></div><p>Electronics</p></div>
+            <div class="bbc-item"><div class="bbc-bar green" style="height:78%"><span>7.8</span></div><p>Mechanical</p></div>
+            <div class="bbc-item"><div class="bbc-bar rose" style="height:68%"><span>6.8</span></div><p>Civil</p></div>
+            <div class="bbc-item"><div class="bbc-bar" style="height:80%"><span>8.0</span></div><p>IT</p></div>
+            <div class="bbc-item"><div class="bbc-bar teal" style="height:74%"><span>7.4</span></div><p>EXTC</p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../static/script.js"></script>
+</body>
+</html>

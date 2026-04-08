@@ -608,9 +608,19 @@ function renderStudentDash(data) {
         `).join('');
     }
     const attList = document.querySelector('#studentAttendanceList');
+    let totalPresent = 0;
+    let totalDays = 0;
     if(attList && data.attendance_records) {
-        let subjAtt = {};
+        let uniqueRecords = {};
         data.attendance_records.forEach(r => {
+            let key = r.date + "_" + r.subject;
+            uniqueRecords[key] = r;
+        });
+
+        let subjAtt = {};
+        Object.values(uniqueRecords).forEach(r => {
+            totalDays++;
+            if(r.status === 'Present') totalPresent++;
             if(!subjAtt[r.subject]) subjAtt[r.subject] = {p:0, t:0};
             subjAtt[r.subject].t++;
             if(r.status === 'Present') subjAtt[r.subject].p++;
@@ -622,8 +632,21 @@ function renderStudentDash(data) {
             let col = colors[idx++ % colors.length];
             return `<div class="att-row"><div class="att-sub"><i class="fas fa-circle ${col}"></i>${sub}</div><div class="att-bar"><div class="bar-track"><div class="bar-fill ${col}-fill" style="width:${pct}%"></div></div><span>${pct}</span></div></div>`;
         }).join('');
+        
+        const attStatusCardsContainer = document.querySelector('.att-status-cards');
+        if(attStatusCardsContainer) {
+            let overallPct = totalDays > 0 ? Math.round((totalPresent / totalDays) * 100) : 0;
+            let absentDays = totalDays - totalPresent;
+            attStatusCardsContainer.innerHTML = `
+              <div class="ass-card green"><span>Present</span><b>${totalPresent}</b><small>days</small></div>
+              <div class="ass-card red"><span>Absent</span><b>${absentDays}</b><small>days</small></div>
+              <div class="ass-card amber"><span>Total</span><b>${totalDays}</b><small>days</small></div>
+              <div class="ass-card blue"><span>Overall</span><b>${overallPct}%</b><small></small></div>
+            `;
+        }
     }
     const mBody = document.getElementById('marksTableBody');
+    let cgpa = "0.0";
     if(mBody && data.marks) {
         let totalSum = 0;
         mBody.innerHTML = data.marks.map((m, i) => {
@@ -636,20 +659,28 @@ function renderStudentDash(data) {
             else if (m.total >= 50) { grade = 'B'; cls = 'blue'; }
             return `<tr><td>${i+1}</td><td>${m.subject}</td><td>${m.code || 'GEN'}</td><td>-</td><td>-</td><td>-</td><td>-</td><td>${m.total}</td><td><span class="badge ${cls}">${grade}</span></td></tr>`;
         }).join('');
-        let pct = data.marks.length > 0 ? (totalSum / (data.marks.length * 100) * 100).toFixed(1) : 0;
+        let pctVal = data.marks.length > 0 ? (totalSum / (data.marks.length * 100) * 100) : 0;
+        let pct = pctVal.toFixed(1);
+        cgpa = data.marks.length > 0 ? (pctVal / 9.5).toFixed(1) : "0.0";
         document.querySelector('.marks-summary').innerHTML = `
             <div class="ms-item"><span>Total Marks</span><b>${totalSum} / ${data.marks.length*100}</b></div>
             <div class="ms-item"><span>Percentage</span><b>${pct}%</b></div>
+            <div class="ms-item"><span>CGPA</span><b>${cgpa}</b></div>
             <div class="ms-item"><span>Result</span><b style="color:var(--green)">PASS</b></div>
         `;
     }
     const overCards = document.querySelectorAll('#studentOverview .stat-card .sc-num');
     if(overCards.length >= 4) {
-        let globalAtt = data.profile ? data.profile.attendance : 0;
+        let globalAtt = totalDays > 0 ? Math.round((totalPresent / totalDays) * 100) : 0;
         overCards[0].textContent = globalAtt + "%";
+        overCards[1].textContent = cgpa;
         overCards[2].textContent = data.marks ? data.marks.length : 0;
-        let ringFill = document.querySelector('.ring-fill');
-        if(ringFill) ringFill.setAttribute('stroke-dasharray', `${globalAtt}, 100`);
+        let ringFills = document.querySelectorAll('#studentOverview .ring-fill');
+        if(ringFills.length > 0) ringFills[0].setAttribute('stroke-dasharray', `${globalAtt}, 100`);
+        if(ringFills.length > 1) {
+            let cgpaPct = parseFloat(cgpa) * 10;
+            ringFills[1].setAttribute('stroke-dasharray', `${cgpaPct}, 100`);
+        }
     }
 }
 

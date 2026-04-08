@@ -95,6 +95,14 @@ def save_attendance():
             "status": r.get('status')
         })
     try:
+        # First delete any existing attendance for this class + subject + date combination
+        # so we don't pile up duplicates every time the teacher clicks Save.
+        try:
+            if class_name != "Unknown" and subject != "Unknown" and date != "":
+                supabase.table('attendance_records').delete().eq('class_name', class_name).eq('subject', subject).eq('date', date).execute()
+        except:
+            pass
+
         if insert_data:
             supabase.table('attendance_records').insert(insert_data).execute()
         return jsonify({"success": True, "message": "Attendance saved successfully!"})
